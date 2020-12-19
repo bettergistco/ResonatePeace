@@ -2,6 +2,19 @@ import React from 'react';
 
 import './RandomCat.css';
 
+Math.random=(function(rand) {
+    var salt=0;
+    document.addEventListener('mousemove',function(event) {
+        salt=event.pageX*event.pageY;
+    });
+    return function() { return (rand()+(1/(1+salt)))%1; };
+})(Math.random);
+
+function betterRandom(min, max) {
+    // The defacto JavaScript way:
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
 class RandomCatPage extends React.Component {
     constructor(props) {
         super(props);
@@ -9,12 +22,23 @@ class RandomCatPage extends React.Component {
         // component state
         this.state = {
             catImage: 'https://cdn2.thecatapi.com/images/bkc.jpg',
+            timeTilNext: -1,
+            pauseLabel: 'Pause',
+            timers: {},
             images: [
                 'https://cdn2.thecatapi.com/images/da4.jpg',
-            ]
+                'https://cdn2.thecatapi.com/images/dnb.jpg',
+                'https://cdn2.thecatapi.com/images/MTY4MDQ3NQ.jpg',
+                'https://cdn2.thecatapi.com/images/d73.png',
+            ],
+            imgIndex: 0
         };
 
+        this.decrementCountdown = this.decrementCountdown.bind(this);
         this.handleFetchNextImage = this.handleFetchNextImage.bind(this);
+        this.pauseSlideshow = this.pauseSlideshow.bind(this);
+        this.resumeSlideshow = this.resumeSlideshow.bind(this);
+        this.startSlideshow = this.startSlideshow.bind(this);
     }
 
     componentDidMount() {
@@ -22,38 +46,121 @@ class RandomCatPage extends React.Component {
             this.select();
         });
 
-        $('#slideshow button#resonate').css('top', (window.innerHeight / 2) - 20);
+        $('#slideshow button.vcenter').css('top', (window.innerHeight / 2) - 20);
 
         window.onresize = function (event) {
-            $('#slideshow button#resonate').css('top',
+            $('#slideshow button.vcenter').css('top',
                 (event.currentTarget.innerHeight / 2) - 20);
         };
     }
 
-    handleFetchNextImage() {
-        fetch('https://api.thecatapi.com/v1/images/search', {
-            method: 'GET',
-            withCredentials: true,
-            headers: {
-                'X-API-Key': '5c91351a-8911-4f19-981e-687703970b2a',
-            }
-        })
-            .then(resp => resp.json())
-            .then(data => {
-                this.setState({catImage: data[0].url});
+    decrementCountdown() {
+        if (this.state.timeTilNext <= 0) {
+            window.clearInterval(this.state.timers.countdownInterval);
+            this.startSlideshow();
 
-                $('#slideshow').css('background-image', 'url("'+ data[0].url + '")')
+            return;
+        }
+
+        this.setState({
+            timeTilNext: this.state.timeTilNext - 10
+        });
+    }
+
+    handleFetchNextImage() {
+        const preloadImage = function (url, callback) {
+            var image = new Image();
+            image.src = url;
+            image.onload = callback;
+        };
+
+        const changeImage = (kittyURL) => {
+            $('<img/>').attr('src', kittyURL).on('load', () => {
+                $(this).remove(); // prevent memory leaks as @benweet suggested
+                $('#slideshow').css('background-image', 'url('+ kittyURL + ')');
+
+                const countdownInterval = setInterval(() => {
+                    this.decrementCountdown();
+                }, 10);
+
+                this.setState({timers: {
+                    countdownInterval: countdownInterval
+                }});
             });
+        }
+
+        let kittyURL;
+
+        if (this.state.imgIndex >= this.state.images.length) {
+
+            fetch('https://api.thecatapi.com/v1/images/search', {
+                method: 'GET',
+                withCredentials: true,
+                headers: {
+                    'X-API-Key': '5c91351a-8911-4f19-981e-687703970b2a',
+                }
+            })
+                .then(resp => resp.json())
+                .then(data => {
+                    kittyURL = data[0].url;
+                    this.setState({catImage: kittyURL});
+                    preloadImage(kittyURL, () => {
+                        changeImage(kittyURL);
+                    });
+
+                });
+        } else {
+            kittyURL = this.state.images[this.state.imgIndex];
+            preloadImage(kittyURL);
+            this.setState({
+                catImage: kittyURL,
+                imgIndex: ++this.state.imgIndex
+            });
+
+            changeImage(kittyURL);
+        }
+    }
+
+    pauseSlideshow() {
+        if (this.state.pauseLabel === 'Resume') {
+            this.resumeSlideshow();
+
+            return;
+        }
+
+        window.clearInterval(this.state.timers.countdownInterval);
+        window.clearTimeout(this.state.timers.slideshowTimeout);
+        this.setState({pauseLabel: 'Resume'});
+    }
+
+    resumeSlideshow() {
+        this.setState({pauseLabel: 'Pause'});
+        this.startSlideshow();
+    }
+
+    startSlideshow() {
+        const $countdown = $('#slideshow #countdown');
+        const timeInterval = betterRandom(4, 20) * 1000;
+
+        this.setState({timeTilNext: timeInterval});
+
+        $countdown.removeClass('d-none');
+        $('button#resonate').addClass('d-none');
+        $('button#pause').removeClass('d-none');
+
+        this.handleFetchNextImage();
     }
 
     render() {
         return (
         <section id="slideshow">
+            <div id="countdown" className="d-none">{this.state.timeTilNext}</div>
             <div className="row justify-content-center">
                 <div className="col-10 col-sm-7 col-md-5 col-lg-4">
-                    <button class="btn btn-light next" onClick={this.handleFetchNextImage}>Next Cat</button>
-                    <div><input class="url" type="text" value={this.state.catImage}/></div>
-                    <button id="resonate" class="btn btn-primary">Resonate</button>
+                    <button className="controls btn btn-light next" onClick={this.handleFetchNextImage}>Next Cat</button>
+                    <div><input className="controls url" type="text" value={this.state.catImage}/></div>
+                    <button id="resonate" className="controls vcenter btn btn-primary" onClick={this.startSlideshow}>Resonate</button>
+                    <button id="pause" className="controls vcenter btn btn-primary d-none" onClick={this.pauseSlideshow}>{ this.state.pauseLabel }</button>
                 </div>
             </div>
         </section>
