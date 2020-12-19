@@ -1,0 +1,16 @@
+{
+  "short_name": "Mindstream App",
+  "name": "Mindstream Mood Journal",
+  "description": "Plot your good days and your bad days. Share with no one or anyone. Securely.\n\n",
+  "icons": [
+    {
+      "src": "favicon.ico",
+      "sizes": "228x228",
+      "type": "image/png"
+    }
+  ],
+  "start_url": "./index.html",
+  "display": "standalone",
+  "theme_color": "#000000",
+  "background_color": "#ffffff"
+}

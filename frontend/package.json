@@ -1,0 +1,44 @@
+{
+  "name": "resonate-peace",
+  "version": "1.0.0",
+  "description": "A 21st Century mind detoxifier.",
+  "private": true,
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BettergistCo/ResonatePeace.git"
+  },
+  "author": "Theodore R. SMith",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/BettergistCo/ResonatePeace/issues"
+  },
+  "homepage": "/",
+  "dependencies": {
+    "availity-reactstrap-validation": "^2.7.0",
+    "react": "^17.0.1",
+    "react-dom": "^17.0.1",
+    "react-router-dom": "^5.2.0",
+    "react-scripts": "^4.0.1",
+    "reactstrap": "^8.7.1",
+    "zepto": "^1.2.0"
+  },
+  "proxy": "http://localhost:5000",
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}
