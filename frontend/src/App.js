@@ -17,16 +17,6 @@ function AuthAction()
 }
 
 class App extends React.Component {
-    // Initialize state
-    state = { passwords: [] }
-
-    // Determine if user is logged in or not.
-    componentDidMount() {
-        this.setState({
-            isLoggedIn: Auth.isUserAuthenticated(),
-        });
-    }
-
     render() {
 
         return (

@@ -4,21 +4,16 @@ import { BrowserRouter, Route } from 'react-router-dom';
 
 import App from './App';
 import './index.css';
-import ForgotPasswordPage from './components/auth/ForgotPassword';
-import LoginPage from './components/auth/Login';
-import LogoutPage from "./components/auth/Logout";
-import RegisterPage from "./components/auth/Register";
+import RandomCat from './components/RandomCat';
+import AboutPage from './components/About';
+import More from './components/More';
 
 ReactDOM.render((
     <BrowserRouter>
-        <Route path = "/" component = {App}/>
-        <Route path = "/forgot-password" component = {ForgotPasswordPage} />
-        <Route path = "/login" component = {LoginPage} />
-        <Route path = "/logout" component = {LogoutPage} />
-        <Route path = "/register" component = {RegisterPage} />
-        {/*<Route path = "home" component = {Home} />*/}
-        {/*<Route path = "about" component = {About} />*/}
-        {/*<Route path = "contact" component = {Contact} />*/}
+        <Route path = "/"         component = {App}/>
+        <Route path = "/resonate" component = {RandomCat} />
+        <Route path = "/about"    component = {AboutPage} />
+        <Route path = "/more"     component = {More} />
     </BrowserRouter>
 ), document.getElementById('root'))
 

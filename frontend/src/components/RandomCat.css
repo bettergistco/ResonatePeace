@@ -1,0 +1,35 @@
+#page {
+    background: #26508a;
+}
+
+.App {
+    display: none;
+    background: lightgrey;
+}
+
+#slideshow {
+    position: absolute;
+    top: 0;
+    width: 100%;
+    height: 100%;
+
+    /*background: url("https://cdn2.thecatapi.com/images/dnb.jpg") no-repeat center center fixed;*/
+    /*background: url("https://cdn2.thecatapi.com/images/MTY4MDQ3NQ.jpg") no-repeat center center fixed;*/
+    /*background: url("https://cdn2.thecatapi.com/images/d73.png") no-repeat center center fixed;*/
+    background: url("https://cdn2.thecatapi.com/images/bkc.jpg") no-repeat center center fixed;
+
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+}
+
+#slideshow button.next {
+    margin-left: 42%;
+}
+
+#slideshow input.url {
+    width: 400px;
+    text-align: center;
+    font-weight: bold;
+}
