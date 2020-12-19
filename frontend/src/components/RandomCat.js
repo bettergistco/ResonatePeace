@@ -30,6 +30,8 @@ class RandomCatPage extends React.Component {
                 'https://cdn2.thecatapi.com/images/dnb.jpg',
                 'https://cdn2.thecatapi.com/images/MTY4MDQ3NQ.jpg',
                 'https://cdn2.thecatapi.com/images/d73.png',
+                'https://cdn2.thecatapi.com/images/abl.jpg',
+                'https://cdn2.thecatapi.com/images/MTkzMDA2Nw.gif'
             ],
             imgIndex: 0
         };
@@ -140,7 +142,7 @@ class RandomCatPage extends React.Component {
 
     startSlideshow() {
         const $countdown = $('#slideshow #countdown');
-        const timeInterval = betterRandom(4, 20) * 1000;
+        const timeInterval = betterRandom(10, 30) * 1000;
 
         this.setState({timeTilNext: timeInterval});
 

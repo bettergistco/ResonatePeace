@@ -18,7 +18,7 @@
   "bugs": {
     "url": "https://github.com/BettergistCo/ResonatePeace/issues"
   },
-  "homepage": "/",
+  "homepage": "https://www.resonance.how/resonate-peace/",
   "dependencies": {
     "availity-reactstrap-validation": "^2.7.0",
     "react": "^17.0.1",

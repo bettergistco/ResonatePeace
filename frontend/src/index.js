@@ -9,11 +9,11 @@ import AboutPage from './components/About';
 import More from './components/More';
 
 ReactDOM.render((
-    <BrowserRouter>
-        <Route path = "/"         component = {App}/>
-        <Route path = "/resonate" component = {RandomCat} />
-        <Route path = "/about"    component = {AboutPage} />
-        <Route path = "/more"     component = {More} />
+    <BrowserRouter basename={'/resonance-peace'}>
+        <Route path={`${process.env.PUBLIC_URL}/`}         component = {App}/>
+        <Route path={`${process.env.PUBLIC_URL}/resonate`} component = {RandomCat} />
+        <Route path={`${process.env.PUBLIC_URL}/about`}    component = {AboutPage} />
+        <Route path={`${process.env.PUBLIC_URL}/more`}     component = {More} />
     </BrowserRouter>
 ), document.getElementById('root'))
 
