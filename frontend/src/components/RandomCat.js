@@ -1,10 +1,6 @@
 import React from 'react';
-import { AvForm, AvGroup, AvInput, AvFeedback } from 'availity-reactstrap-validation';
-import { Button, Label } from 'reactstrap';
 
 import './RandomCat.css';
-
-
 
 class RandomCatPage extends React.Component {
     constructor(props) {
@@ -13,6 +9,9 @@ class RandomCatPage extends React.Component {
         // component state
         this.state = {
             catImage: 'https://cdn2.thecatapi.com/images/bkc.jpg',
+            images: [
+                'https://cdn2.thecatapi.com/images/da4.jpg',
+            ]
         };
 
         this.handleFetchNextImage = this.handleFetchNextImage.bind(this);
@@ -22,6 +21,13 @@ class RandomCatPage extends React.Component {
         $('input.url').on('click', function () {
             this.select();
         });
+
+        $('#slideshow button#resonate').css('top', (window.innerHeight / 2) - 20);
+
+        window.onresize = function (event) {
+            $('#slideshow button#resonate').css('top',
+                (event.currentTarget.innerHeight / 2) - 20);
+        };
     }
 
     handleFetchNextImage() {
@@ -38,7 +44,6 @@ class RandomCatPage extends React.Component {
 
                 $('#slideshow').css('background-image', 'url("'+ data[0].url + '")')
             });
-
     }
 
     render() {
@@ -46,9 +51,9 @@ class RandomCatPage extends React.Component {
         <section id="slideshow">
             <div className="row justify-content-center">
                 <div className="col-10 col-sm-7 col-md-5 col-lg-4">
-                    <button class="next" onClick={this.handleFetchNextImage}>Next Cat</button>
+                    <button class="btn btn-light next" onClick={this.handleFetchNextImage}>Next Cat</button>
                     <div><input class="url" type="text" value={this.state.catImage}/></div>
-                    <img id="centerPhoto" />
+                    <button id="resonate" class="btn btn-primary">Resonate</button>
                 </div>
             </div>
         </section>

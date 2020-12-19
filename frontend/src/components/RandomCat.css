@@ -25,11 +25,20 @@
 }
 
 #slideshow button.next {
-    margin-left: 42%;
+    margin-left: 52%;
+    margin-bottom: 5px;
 }
 
 #slideshow input.url {
+    margin-left: 30px;
     width: 400px;
     text-align: center;
     font-weight: bold;
+}
+
+#slideshow button#resonate {
+    position: absolute;
+    left: 50%;
+    height: 50px;
+    /*margin-top: 200px;*/
 }
