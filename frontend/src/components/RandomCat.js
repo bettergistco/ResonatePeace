@@ -19,6 +19,8 @@ class RandomCatPage extends React.Component {
     constructor(props) {
         super(props);
 
+        this.isFirstVideo = true;
+
         // component state
         this.state = {
             catImage: 'https://cdn2.thecatapi.com/images/bkc.jpg',
@@ -69,6 +71,19 @@ class RandomCatPage extends React.Component {
         });
     }
 
+    fetchInspirationalVideo() {
+        const inspirationalVideos = [
+            "OPR3GlpQQJA",
+            "TCcTJjLFDE8",
+            "AkhPm7UoIzY",
+            "7AV_WmEKUgk",
+            "fcPWU59Luoc",
+            "u9Dg-g7t2l4",
+        ];
+
+        return inspirationalVideos[betterRandom(0, inspirationalVideos.length - 1)];
+    }
+
     handleFetchNextImage() {
         const preloadImage = function (url, callback) {
             var image = new Image();
@@ -93,6 +108,20 @@ class RandomCatPage extends React.Component {
 
         let kittyURL;
 
+        const diceRolls = betterRandom(1, 6) + betterRandom(1, 6);
+        // Show an inspirational video if dice are rolled just right.
+        if (diceRolls === 2 || diceRolls === 12) {
+            const $slideshow = $('#slideshow');
+            const videoURI = this.isFirstVideo ? "fcPWU59Luoc" : this.fetchInspirationalVideo();
+            this.isFirstVideo = false;
+
+            const embedHTML = `<iframe src="https://www.youtube.com/embed/${videoURI}?autoplay=1" allow="autoplay"></iframe>`;
+            $slideshow.css('background', 'url(https://techcrunch.com/wp-content/uploads/2015/08/clouds.jpg) center center fixed');
+            $slideshow.append($(embedHTML));
+
+            return;
+        }
+
         if (this.state.imgIndex >= this.state.images.length) {
 
             fetch('https://api.thecatapi.com/v1/images/search', {
@@ -109,7 +138,6 @@ class RandomCatPage extends React.Component {
                     preloadImage(kittyURL, () => {
                         changeImage(kittyURL);
                     });
-
                 });
         } else {
             kittyURL = this.state.images[this.state.imgIndex];
