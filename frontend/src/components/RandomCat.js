@@ -122,6 +122,7 @@ class RandomCatPage extends React.Component {
         const diceRolls = betterRandom(1, 6) + betterRandom(1, 6);
 
         // Show an inspirational video if dice are rolled just right.
+        console.log("Dice rolls: " + diceRolls);
         if (diceRolls === 2 || diceRolls === 12) {
             const $slideshow = $('#slideshow');
             const videoURI = this.isFirstVideo ? "03IOxDccRnM" : this.fetchInspirationalVideo();
