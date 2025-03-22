@@ -1,13 +1,12 @@
 import React from 'react';
-
 import './RandomCat.css';
 
-Math.random=(function(rand) {
-    var salt=0;
-    document.addEventListener('mousemove',function(event) {
-        salt=event.pageX*event.pageY;
+Math.random = (function(rand) {
+    let salt = 0;
+    document.addEventListener('mousemove', function(event) {
+        salt = event.pageX * event.pageY;
     });
-    return function() { return (rand()+(1/(1+salt)))%1; };
+    return function() { return (rand() + (1 / (1 + salt))) % 1; };
 })(Math.random);
 
 function betterRandom(min, max) {
@@ -21,12 +20,15 @@ class RandomCatPage extends React.Component {
 
         this.isFirstVideo = true;
 
+        // timers as instance properties
+        this.countdownInterval = null;
+        this.slideshowTimeout = null;
+
         // component state
         this.state = {
             catImage: 'https://cdn2.thecatapi.com/images/bkc.jpg',
             timeTilNext: -1,
             pauseLabel: 'Pause',
-            timers: {},
             images: [
                 'https://cdn2.thecatapi.com/images/da4.jpg',
                 'https://cdn2.thecatapi.com/images/dnb.jpg',
@@ -58,27 +60,22 @@ class RandomCatPage extends React.Component {
         };
     }
 
+    componentWillUnmount() {
+        // Clean up timers
+        window.clearInterval(this.countdownInterval);
+        window.clearTimeout(this.slideshowTimeout);
+    }
+
     decrementCountdown() {
         if (this.state.timeTilNext <= 0) {
-            window.clearInterval(this.state.timers.countdownInterval);
-            // Set up the next slide
-            const slideshowTimeout = setTimeout(() => {
-                this.startSlideshow();
-            }, 100);
-
-            // Store the timeout in state
-            this.setState(prevState => ({
-                timers: {
-                    ...prevState.timers,
-                    slideshowTimeout: slideshowTimeout
-                }
-            }));
+            window.clearInterval(this.countdownInterval);
+            this.startSlideshow();
             return;
         }
 
-        this.setState({
-            timeTilNext: this.state.timeTilNext - 10
-        });
+        this.setState(prevState => ({
+            timeTilNext: prevState.timeTilNext - 10
+        }));
     }
 
     fetchInspirationalVideo() {
@@ -95,45 +92,44 @@ class RandomCatPage extends React.Component {
     }
 
     handleFetchNextImage() {
-        const preloadImage = function (url, callback) {
-            var image = new Image();
+        // Reset the timer on Next Image click:
+        if (this.countdownInterval) {
+            window.clearInterval(this.countdownInterval);
+        }
+        const newTimeInterval = betterRandom(10, 30) * 1000;
+        this.setState({ timeTilNext: newTimeInterval });
+
+        const preloadImage = (url, callback) => {
+            const image = new Image();
             image.src = url;
             image.onload = callback;
         };
 
         const changeImage = (kittyURL) => {
             $('<img/>').attr('src', kittyURL).on('load', () => {
-                $(this).remove(); // prevent memory leaks as @benweet suggested
-                $('#slideshow').css('background-image', 'url('+ kittyURL + ')');
+                $(this).remove(); // prevent memory leaks
+                $('#slideshow').css('background-image', 'url(' + kittyURL + ')');
 
-                const countdownInterval = setInterval(() => {
+                // Start a new countdown timer
+                this.countdownInterval = setInterval(() => {
                     this.decrementCountdown();
                 }, 10);
-
-                // Update timers state preserving any existing timers
-                this.setState(prevState => ({
-                    timers: {
-                        ...prevState.timers,
-                        countdownInterval: countdownInterval
-                    }
-                }));
             });
-        }
+        };
 
         let kittyURL;
-
         const diceRolls = betterRandom(1, 6) + betterRandom(1, 6);
+
         // Show an inspirational video if dice are rolled just right.
         if (diceRolls === 2 || diceRolls === 12) {
             const $slideshow = $('#slideshow');
-            const videoURI = this.isFirstVideo ? "fcPWU59Luoc" : this.fetchInspirationalVideo();
+            const videoURI = this.isFirstVideo ? "03IOxDccRnM" : this.fetchInspirationalVideo();
             this.isFirstVideo = false;
 
             const embedHTML = `<iframe src="https://www.youtube.com/embed/${videoURI}?autoplay=1" allow="autoplay"></iframe>`;
             $slideshow.css('background', 'url(https://techcrunch.com/wp-content/uploads/2015/08/clouds.jpg) center center fixed');
             $slideshow.append($(embedHTML));
             this.pauseSlideshow();
-
             return;
         }
 
@@ -148,7 +144,7 @@ class RandomCatPage extends React.Component {
                 .then(resp => resp.json())
                 .then(data => {
                     kittyURL = data[0].url;
-                    this.setState({catImage: kittyURL});
+                    this.setState({ catImage: kittyURL });
                     preloadImage(kittyURL, () => {
                         changeImage(kittyURL);
                     });
@@ -156,11 +152,10 @@ class RandomCatPage extends React.Component {
         } else {
             kittyURL = this.state.images[this.state.imgIndex];
             preloadImage(kittyURL);
-            this.setState({
+            this.setState(prevState => ({
                 catImage: kittyURL,
-                imgIndex: this.state.imgIndex + 1 // Fixed: use this.state.imgIndex + 1 instead of ++this.state.imgIndex
-            });
-
+                imgIndex: prevState.imgIndex + 1
+            }));
             changeImage(kittyURL);
         }
     }
@@ -171,44 +166,21 @@ class RandomCatPage extends React.Component {
             return;
         }
 
-        // Clear all active timers
-        if (this.state.timers.countdownInterval) {
-            window.clearInterval(this.state.timers.countdownInterval);
-        }
-        if (this.state.timers.slideshowTimeout) {
-            window.clearTimeout(this.state.timers.slideshowTimeout);
-        }
-
-        this.setState({pauseLabel: 'Resume'});
+        window.clearInterval(this.countdownInterval);
+        window.clearTimeout(this.slideshowTimeout);
+        this.setState({ pauseLabel: 'Resume' });
     }
 
     resumeSlideshow() {
-        this.setState({pauseLabel: 'Pause'});
-
-        // If we have a time remaining, restart the countdown
-        if (this.state.timeTilNext > 0) {
-            const countdownInterval = setInterval(() => {
-                this.decrementCountdown();
-            }, 10);
-
-            // Update timers state preserving any existing timers
-            this.setState(prevState => ({
-                timers: {
-                    ...prevState.timers,
-                    countdownInterval: countdownInterval
-                }
-            }));
-        } else {
-            // Otherwise, start a new slideshow
-            this.startSlideshow();
-        }
+        this.setState({ pauseLabel: 'Pause' });
+        this.startSlideshow();
     }
 
     startSlideshow() {
         const $countdown = $('#slideshow #countdown');
+        // Set a new random time interval when starting the slideshow.
         const timeInterval = betterRandom(10, 30) * 1000;
-
-        this.setState({timeTilNext: timeInterval});
+        this.setState({ timeTilNext: timeInterval });
 
         $countdown.removeClass('d-none');
         $('button#resonate').addClass('d-none');
@@ -224,9 +196,13 @@ class RandomCatPage extends React.Component {
                 <div className="row justify-content-center">
                     <div className="col-10 col-sm-7 col-md-5 col-lg-4">
                         <button className="controls btn btn-light next" onClick={this.handleFetchNextImage}>Next Cat</button>
-                        <div><input className="controls url" type="text" value={this.state.catImage}/></div>
+                        <div>
+                            <input className="controls url" type="text" value={this.state.catImage} readOnly/>
+                        </div>
                         <button id="resonate" className="controls vcenter btn btn-primary" onClick={this.startSlideshow}>Resonate</button>
-                        <button id="pause" className="controls vcenter btn btn-primary d-none" onClick={this.pauseSlideshow}>{ this.state.pauseLabel }</button>
+                        <button id="pause" className="controls vcenter btn btn-primary d-none" onClick={this.pauseSlideshow}>
+                            { this.state.pauseLabel }
+                        </button>
                     </div>
                 </div>
             </section>
