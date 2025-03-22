@@ -1,0 +1,24 @@
+{
+  "name": "moodjournal",
+  "version": "1.0.0",
+  "description": "Plot your good days and your bad days. Share with no one or anyone. Securely.",
+  "private": true,
+  "scripts": {
+    "heroku-prebuild": "cd frontend && npm install && npm run build && cd .. && cd backend && npm install",
+    "start": "cd backend && node app.js",
+    "dev": "nodemon backend --watch backend"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Node4Ever/MoodJournal.git"
+  },
+  "author": "Andrea Duran",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Node4Ever/MoodJournal/issues"
+  },
+  "homepage": "https://github.com/Node4Ever/MoodJournal#readme",
+  "dependencies": {
+    "mysql2": "^2.2.5"
+  }
+}
