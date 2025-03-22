@@ -132,6 +132,7 @@ class RandomCatPage extends React.Component {
             const embedHTML = `<iframe src="https://www.youtube.com/embed/${videoURI}?autoplay=1" allow="autoplay"></iframe>`;
             $slideshow.css('background', 'url(https://techcrunch.com/wp-content/uploads/2015/08/clouds.jpg) center center fixed');
             $slideshow.append($(embedHTML));
+            this.pauseSlideshow();
 
             return;
         }
