@@ -106,6 +106,7 @@ class RandomCatPage extends React.Component {
         };
 
         const changeImage = (kittyURL) => {
+            $('#slideshow iframe').remove();
             $('<img/>').attr('src', kittyURL).on('load', () => {
                 $(this).remove(); // prevent memory leaks
                 $('#slideshow').css('background-image', 'url(' + kittyURL + ')');
@@ -126,7 +127,7 @@ class RandomCatPage extends React.Component {
             const videoURI = this.isFirstVideo ? "03IOxDccRnM" : this.fetchInspirationalVideo();
             this.isFirstVideo = false;
 
-            const embedHTML = `<iframe src="https://www.youtube.com/embed/${videoURI}?autoplay=1" allow="autoplay"></iframe>`;
+            const embedHTML = `<iframe id="player" src="https://www.youtube.com/embed/${videoURI}?autoplay=1" allow="autoplay"></iframe>`;
             $slideshow.css('background', 'url(https://techcrunch.com/wp-content/uploads/2015/08/clouds.jpg) center center fixed');
             $slideshow.append($(embedHTML));
             this.pauseSlideshow();
